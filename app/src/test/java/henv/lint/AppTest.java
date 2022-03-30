@@ -3,12 +3,53 @@
  */
 package henv.lint;
 
+import henv.lint.service.Linter;
+import henv.lint.utils.YamlFileUtils;
+import henv.lint.values.Finding;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    @Test
+    public void appHasAGreeting() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test1");
+
+        Linter lint = new Linter();
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var findings = lint.lint(yamlFiles);
+
+        var expectedFinding = new Finding(0,"Nils", Paths.get("./src/test/resources/test1/development.yaml"), Paths.get("./src/test/resources/test1/file2.yaml"));
+        var expectedFinding2 = new Finding(1,"Harry", Paths.get("./src/test/resources/test1/development.yaml"), Paths.get("./src/test/resources/test1/file2.yaml"));
+
+        assertTrue(findings.contains(expectedFinding));
+        assertTrue(findings.contains(expectedFinding2));
+    }
+
+    @Test
+    public void appHasAGreeting2() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test2");
+
+        Linter lint = new Linter();
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var findings = lint.lint(yamlFiles);
+
+        var expectedFinding = new Finding(1,"Harry", Paths.get("./src/test/resources/test2/development.yaml"), Paths.get("./src/test/resources/test2/file2.yaml"));
+        assertTrue(findings.contains(expectedFinding));
+    }
+
+    @Test
+    public void appHasAGreeting3() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test3");
+
+        Linter lint = new Linter();
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var findings = lint.lint(yamlFiles);
+
+        //var expectedFinding = new Finding(1,"Harry", Paths.get("./src/test/resources/test2/file2.yaml"));
+        assertTrue(findings.size() == 0);
     }
 }

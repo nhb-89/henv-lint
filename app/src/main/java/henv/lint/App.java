@@ -7,10 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.flipkart.zjsonpatch.JsonDiff;
+import henv.lint.service.Linter;
+import henv.lint.utils.YamlFileUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
+import java.nio.file.Paths;
 
 public class App {
     public String getGreeting() {
@@ -18,18 +19,11 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-        JsonNode file1 = objectMapper.readTree(new File("C:\\Users\\Nils Berger\\IdeaProjects\\henv-lint\\app\\src\\main\\java\\henv\\lint\\file1.yaml"));
-        JsonNode file2 = objectMapper.readTree(new File("C:\\Users\\Nils Berger\\IdeaProjects\\henv-lint\\app\\src\\main\\java\\henv\\lint\\file2.yaml"));
-        JsonNode patch = JsonDiff.asJson(file1, file2);
-        for(Iterator<JsonNode> iter = patch.elements(); iter.hasNext(); ){
-            JsonNode node = iter.next();
-            int a = 0;
+        var rootDirectory = Paths.get("C:\\Users\\Nils Berger\\IdeaProjects\\henv-lint\\app\\src\\main\\java\\henv");
 
-
-        }
-        String diffs = patch.toString();
-
-        System.out.println(diffs);
+        Linter lint = new Linter();
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var list = lint.lint(yamlFiles);
+        var a = 1;
     }
 }
