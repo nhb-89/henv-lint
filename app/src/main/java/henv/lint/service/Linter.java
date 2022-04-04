@@ -1,20 +1,18 @@
 package henv.lint.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import henv.lint.values.CustomScalarNode;
 import henv.lint.values.Finding;
+import org.apache.commons.collections4.CollectionUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.nodes.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -23,21 +21,18 @@ import java.util.stream.StreamSupport;
 public class Linter {
 
     private final List<Finding> findings;
+    private final List<Path> yamlFiles;
 
-    public Linter() {
+    public Linter(final List<Path> yamlFiles) {
+        Preconditions.checkArgument(yamlFiles.size() > 0, "henv-lint needs at least one file to compare");
+
+        this.yamlFiles = yamlFiles;
         this.findings = new ArrayList<>();
     }
 
-    public List<Finding> lint(final List<Path> yamlFiles){
-        if(yamlFiles.size() < 2)
-        {
-            System.out.println("Nothing to compare!");
-            return Collections.emptyList();
-        }
+    public List<Finding> lint(){
 
-        var develop = yamlFiles.stream().filter(f -> f.toString().toLowerCase().contains("development") || f.toString().toLowerCase().contains("develop")).findFirst();
-
-        Path truthYaml = develop.isPresent() ? develop.get() : yamlFiles.get(0);
+        var truthYaml = getTruthFile(yamlFiles);
 
         for(Path yamlFile: yamlFiles)
         {
@@ -54,29 +49,28 @@ public class Linter {
     {
         var truthNodes = readYaml(truthYaml);
         var nodes = readYaml(yamlFile);
+
         List<Node> at = StreamSupport.stream(truthNodes.spliterator(), false).collect(Collectors.toList());
         List<Node> bt = StreamSupport.stream(nodes.spliterator(), false).collect(Collectors.toList());
 
         Node nodeA = getFirstDocumentOrReturnEmpty(at);
         Node nodeB = getFirstDocumentOrReturnEmpty(bt);
 
-        var a = (MappingNode) nodeA;
-        var b = (MappingNode) nodeB;
-        iterate(a,b);
+        iterate((MappingNode) nodeA, (MappingNode) nodeB, truthYaml, yamlFile);
     }
 
-    private void iterate(MappingNode mappingNodeA, MappingNode mappingNodeB)
+    private void iterate(MappingNode mappingNodeA, MappingNode mappingNodeB, Path file, Path otherFile)
     {
-        var expectedKeys = getCustomScalarNodes(mappingNodeA);
-        var actualKeys = getCustomScalarNodes(mappingNodeB);
+        var expectedKeys = getCustomScalarNodes(mappingNodeA, file);
+        var actualKeys = getCustomScalarNodes(mappingNodeB, otherFile);
 
-        var difference = Sets.difference(expectedKeys, actualKeys);
+        var difference = CollectionUtils.disjunction(expectedKeys, actualKeys);
         createFindings(difference);
 
         for(var tuple: mappingNodeA.getValue())
         {
             var key = getScalarNode(tuple).getValue();
-            var keyB = iassent(key, mappingNodeB);
+            var keyB = tryToGetKey(key, mappingNodeB);
 
             //Key also found in other file
             if(keyB.isPresent())
@@ -85,26 +79,14 @@ public class Linter {
                 {
                     var mappingNodeKeyA = (MappingNode) tuple.getValueNode();
                     var mappingNodeKeyB = (MappingNode) keyB.get().getValueNode();
-                    iterate(mappingNodeKeyA, mappingNodeKeyB);
-                }
-                else
-                {
-                    // ScalarNode which has no value
+
+                    iterate(mappingNodeKeyA, mappingNodeKeyB, file, otherFile);
                 }
             }
         }
     }
 
-    private boolean isKeyPresent(String key, MappingNode mappingNode)
-    {
-        return mappingNode.getValue().stream()
-                .map( nt -> nt.getKeyNode())
-                .filter( k -> k instanceof ScalarNode)
-                .map(s -> (ScalarNode) s)
-                .anyMatch(s -> s.getValue().equals(key));
-    }
-
-    private Optional<NodeTuple> iassent(String key, MappingNode mappingNode)
+    private Optional<NodeTuple> tryToGetKey(String key, MappingNode mappingNode)
     {
         return mappingNode.getValue().stream()
                 .filter(nt -> nt.getKeyNode() instanceof ScalarNode)
@@ -112,42 +94,17 @@ public class Linter {
                 .findFirst();
     }
 
-    private List<Finding> compare(MappingNode a, MappingNode b, Path truthYaml, Path compareYaml)
+    private void createFindings(final Collection<CustomScalarNode> scalarNodes)
     {
-        Preconditions.checkArgument(a instanceof MappingNode, "Element not of type MappingNode");
-        Preconditions.checkArgument(b instanceof MappingNode, "Element not of type MappingNode");
-
-        List<Finding> findings = new ArrayList<>();
-
-        var expectedKeys = a.getValue().stream()
-                .map(n -> n.getKeyNode())
-                .filter( v -> v instanceof ScalarNode)
-                .map(v -> new CustomScalarNode((ScalarNode) v, truthYaml, compareYaml))
-                .collect(Collectors.toSet());
-
-        var actualKeys = b.getValue().stream()
-                .map(n -> n.getKeyNode())
-                .filter( v -> v instanceof ScalarNode)
-                .map(v -> new CustomScalarNode((ScalarNode) v, compareYaml, truthYaml))
-                .collect(Collectors.toSet());
-
-        var difference = Sets.difference(expectedKeys, actualKeys);
-        createFindings(difference);
-
-        return findings;
+        findings.addAll(scalarNodes.stream().map( d -> new Finding(d.getLine(), d.getValue(), d.getYaml())).collect(Collectors.toList()));
     }
 
-    private void createFindings(Sets.SetView<CustomScalarNode> scalarNodes)
-    {
-        findings.addAll(scalarNodes.stream().map( d -> new Finding(d.getLine(), d.getValue(), d.getOwnFilePath(), d.getCompareFilePath())).collect(Collectors.toList()));
-    }
-
-    private Set<CustomScalarNode> getCustomScalarNodes(MappingNode mappingNode)
+    private Set<CustomScalarNode> getCustomScalarNodes(MappingNode mappingNode, Path yaml)
     {
         return mappingNode.getValue().stream()
                 .map(n -> n.getKeyNode())
                 .filter( v -> v instanceof ScalarNode)
-                .map(n -> new CustomScalarNode((ScalarNode) n))
+                .map(n -> new CustomScalarNode((ScalarNode) n, yaml))
                 .collect(Collectors.toSet());
     }
 
@@ -178,5 +135,11 @@ public class Linter {
     {
         var mark = new Mark("Empty",0,0,0,new char[0],0);
         return new MappingNode( new Tag("Empty"), false, Collections.emptyList(), mark, mark, DumperOptions.FlowStyle.AUTO);
+    }
+
+    private static Path getTruthFile(List<Path> yamlFiles)
+    {
+        var develop = yamlFiles.stream().filter(f -> f.toString().toLowerCase().contains("development") || f.toString().toLowerCase().contains("develop")).findFirst();
+        return  develop.isPresent() ? develop.get() : yamlFiles.get(0);
     }
 }

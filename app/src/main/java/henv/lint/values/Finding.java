@@ -7,13 +7,11 @@ public class Finding {
     private int line;
     private String key;
     private Path own;
-    private Path other;
 
-    public Finding(int line, String key, Path own, Path other) {
+    public Finding(int line, String key, Path own) {
         this.line = line;
         this.key = key;
         this.own = own;
-        this.other = other;
     }
 
     public int getLine() {
@@ -39,10 +37,9 @@ public class Finding {
                 .append("Error: ")
                 .append("The key \"")
                 .append(getKey())
-                .append("\" exists in file ")
+                .append("\" exists only in this file: ")
                 .append(getFilename())
-                .append(" but not not in file")
-                .append(other.getFileName())
+                .append(" but not not in file ")
                 .toString();
     }
 

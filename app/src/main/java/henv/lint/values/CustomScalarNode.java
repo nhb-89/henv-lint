@@ -7,16 +7,11 @@ import java.util.Objects;
 
 public class CustomScalarNode {
     private final ScalarNode scalarNode;
-    private Path ownFile;
-    private Path compareFile;
-    public CustomScalarNode(ScalarNode scalarNode, Path ownFile, Path compareFile) {
-        this.scalarNode = scalarNode;
-        this.ownFile = ownFile;
-        this.compareFile = compareFile;
-    }
+    private final Path yaml;
 
-    public CustomScalarNode(ScalarNode scalarNode) {
+    public CustomScalarNode(ScalarNode scalarNode, Path yaml) {
         this.scalarNode = scalarNode;
+        this.yaml = yaml;
     }
 
     public String getValue()
@@ -28,15 +23,8 @@ public class CustomScalarNode {
         return scalarNode.getStartMark().getLine();
     }
 
-    public Path getOwnFilePath() {
-        return ownFile;
-    }
-    public Path getCompareFilePath() {
-        return compareFile;
-    }
-    public ScalarNode getScalarNode()
-    {
-        return scalarNode;
+    public Path getYaml() {
+        return yaml;
     }
 
     @Override

@@ -3,10 +3,6 @@
  */
 package henv.lint;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.flipkart.zjsonpatch.JsonDiff;
 import henv.lint.service.Linter;
 import henv.lint.utils.YamlFileUtils;
 
@@ -14,16 +10,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) throws IOException {
         var rootDirectory = Paths.get("C:\\Users\\Nils Berger\\IdeaProjects\\henv-lint\\app\\src\\main\\java\\henv");
 
-        Linter lint = new Linter();
         var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
-        var list = lint.lint(yamlFiles);
-        var a = 1;
+        Linter lint = new Linter(yamlFiles);
+
+        var list = lint.lint();
     }
 }
