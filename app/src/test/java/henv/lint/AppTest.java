@@ -69,7 +69,7 @@ class AppTest {
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
 
-        var expectedFinding = new Finding(15,"java", Paths.get("./src/test/resources/test1/file.yaml"));
+        var expectedFinding = new Finding(15,"java", Paths.get("./src/test/resources/test4/file.yaml"));
         assertTrue(findings.contains(expectedFinding));
         assertTrue(findings.size() == 1);
     }
