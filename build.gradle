@@ -10,7 +10,11 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'java'
 }
+
+group = 'org.henv-lint'
+version = '0.1.0'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -29,22 +33,9 @@ dependencies {
 
 testing {
     suites {
-        // Configure the built-in test suite
         test {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('5.8.1')
         }
     }
-}
-
-application {
-    // Define the main class for the application.
-    mainClass = 'henv.lint.app'
-}
-
-task wrapper(type: Wrapper){
-    gradleVersion = '7.4'
-}
-task prepareKotlinBuildScriptModel {
-
 }
