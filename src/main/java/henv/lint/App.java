@@ -5,18 +5,48 @@ package henv.lint;
 
 import henv.lint.service.Linter;
 import henv.lint.utils.YamlFileUtils;
+import henv.lint.values.Finding;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class App {
 
     public static void main(String[] args) throws IOException {
-        var rootDirectory = Paths.get("C:\\Users\\Nils Berger\\IdeaProjects\\henv-lint\\app\\src\\main\\java\\henv");
+        var rootDirectory = Paths.get("../searchspace");
 
         var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+
         Linter lint = new Linter(yamlFiles);
 
         var list = lint.lint();
+
+       if(list.isEmpty())
+       {
+           System.out.println("Good job! No flaws detected");
+           System.exit(0);
+       }
+       else {
+            printPrettyFindings(list);
+            System.exit(1);
+       }
+    }
+    public static void printPrettyFindings(List<Finding> findings)
+    {
+        var groups = findings.stream().collect(groupingBy(Finding::getFilename));
+
+        for(var entry : groups.entrySet())
+        {
+            System.out.println("_________________________________________________________________________");
+            System.out.println("File: " + entry.getKey());
+            for(var finding : entry.getValue())
+            {
+                System.out.println(finding);
+            }
+            System.out.println("_________________________________________________________________________");
+        }
     }
 }

@@ -28,7 +28,7 @@ public class Finding {
 
     public String getFilename()
     {
-        return own.getFileName().toString();
+        return own.toString();
     }
 
     @Override
@@ -37,9 +37,8 @@ public class Finding {
                 .append("Error: ")
                 .append("The key \"")
                 .append(getKey())
-                .append("\" exists only in this file: ")
+                .append("\" exists only in file: ")
                 .append(getFilename())
-                .append(" but not not in file ")
                 .toString();
     }
 

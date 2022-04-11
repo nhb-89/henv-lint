@@ -19,7 +19,7 @@ class AppTest {
         var rootDirectory = Paths.get("./src/test/resources/test1");
 
         var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
-        Linter lint = new Linter(yamlFiles);;
+        Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
 
         var expectedFinding = new Finding(1,"Hendrick", Paths.get("./src/test/resources/test1/file.yaml"));
@@ -29,7 +29,7 @@ class AppTest {
         assertTrue(findings.contains(expectedFinding));
         assertTrue(findings.contains(expectedFinding2));
         assertTrue(findings.contains(expectedFinding3));
-        assertTrue(findings.size() == 3);
+        assertEquals(findings.size(), 3);
     }
 
     @Test
@@ -46,7 +46,7 @@ class AppTest {
         assertTrue(findings.contains(expectedFinding));
         assertTrue(findings.contains(expectedFinding2));
 
-        assertTrue(findings.size() == 2);
+        assertEquals(findings.size(), 2);
     }
 
     @Test
@@ -58,7 +58,7 @@ class AppTest {
         var findings = lint.lint();
 
         //var expectedFinding = new Finding(1,"Harry", Paths.get("./src/test/resources/test2/file.yaml"));
-        assertTrue(findings.size() == 2);
+        assertEquals(findings.size(), 2);
     }
 
     @Test
@@ -71,6 +71,17 @@ class AppTest {
 
         var expectedFinding = new Finding(15,"java", Paths.get("./src/test/resources/test4/file.yaml"));
         assertTrue(findings.contains(expectedFinding));
-        assertTrue(findings.size() == 1);
+        assertEquals(findings.size(), 1);
+    }
+
+    @Test
+    public void appHasAGreeting5() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test5");
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+
+        Linter lint = new Linter(yamlFiles);
+        var findings = lint.lint();
+
+        assertEquals(findings.size(), 0);
     }
 }
