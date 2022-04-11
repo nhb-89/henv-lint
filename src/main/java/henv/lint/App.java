@@ -4,10 +4,12 @@
 package henv.lint;
 
 import henv.lint.service.Linter;
+import henv.lint.service.ProjectLinter;
 import henv.lint.utils.YamlFileUtils;
 import henv.lint.values.Finding;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -16,13 +18,12 @@ import static java.util.stream.Collectors.groupingBy;
 public class App {
 
     public static void main(String[] args) throws IOException {
-        var rootDirectory = Paths.get("../searchspace");
+       //var rootDirectory = Paths.get("../searchspace");
+       var root = Paths.get("/Users/DE113838/repos/deco-data-system/environments");
 
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+       ProjectLinter projectLint = new ProjectLinter(root);
 
-        Linter lint = new Linter(yamlFiles);
-
-        var list = lint.lint();
+       var list = projectLint.lintProject();
 
        if(list.isEmpty())
        {

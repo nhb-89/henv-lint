@@ -37,6 +37,8 @@ public class Finding {
                 .append("Error: ")
                 .append("The key \"")
                 .append(getKey())
+                .append("\" at line \"")
+                .append(line + 1)
                 .append("\" exists only in file: ")
                 .append(getFilename())
                 .toString();

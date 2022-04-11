@@ -11,7 +11,7 @@ RUN mkdir /searchspace
 RUN addgroup --system javauser && adduser -S -s /bin/false -G javauser javauser
 
 COPY --from=build ./project/build/libs/henv-lint-0.1.0-all.jar /app/henv-lint.jar
-COPY ./mount /searchspace
+#COPY ./mount /searchspace
 
 WORKDIR /app
 RUN chown -R javauser:javauser /app

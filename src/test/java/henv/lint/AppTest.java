@@ -50,15 +50,17 @@ class AppTest {
     }
 
     @Test
-    public void appHasAGreeting3() throws IOException {
+    public void emptyFile() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test3");
         var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
 
-        //var expectedFinding = new Finding(1,"Harry", Paths.get("./src/test/resources/test2/file.yaml"));
-        assertEquals(findings.size(), 2);
+        var expectedFinding1 = new Finding(0,"Nils", Paths.get("./src/test/resources/test3/development.yaml"));
+
+        assertTrue(findings.contains(expectedFinding1));
+        assertEquals(1, findings.size());
     }
 
     @Test
@@ -77,6 +79,36 @@ class AppTest {
     @Test
     public void appHasAGreeting5() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test5");
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+
+        Linter lint = new Linter(yamlFiles);
+        var findings = lint.lint();
+
+        assertEquals(findings.size(), 0);
+    }
+    @Test
+    public void appHasAGreeting6() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test6");
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+
+        Linter lint = new Linter(yamlFiles);
+        var findings = lint.lint();
+
+        assertEquals(findings.size(), 0);
+    }
+    @Test
+    public void allEmptyFiles() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/allEmpty");
+        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+
+        Linter lint = new Linter(yamlFiles);
+        var findings = lint.lint();
+
+        assertEquals(findings.size(), 0);
+    }
+    @Test
+    public void test7() throws IOException {
+        var rootDirectory = Paths.get("./src/test/resources/test7");
         var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);

@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 
@@ -69,17 +70,19 @@ public class Linter {
 
         for(var tuple: mappingNodeA.getValue())
         {
-            var key = getScalarNode(tuple).getValue();
+            var optionalKey = getScalarNode(tuple);
+            if(optionalKey.isEmpty())
+            {
+                return;
+            }
+            var key = optionalKey.get().getValue();
             var keyB = tryToGetKey(key, mappingNodeB);
 
             //Key also found in other file
             if(keyB.isPresent())
             {
-                if(tuple.getValueNode() instanceof MappingNode)
+                if(tuple.getValueNode() instanceof MappingNode mappingNodeKeyA && keyB.get().getValueNode() instanceof MappingNode mappingNodeKeyB)
                 {
-                    var mappingNodeKeyA = (MappingNode) tuple.getValueNode();
-                    var mappingNodeKeyB = (MappingNode) keyB.get().getValueNode();
-
                     iterate(mappingNodeKeyA, mappingNodeKeyB, file, otherFile);
                 }
             }
@@ -96,29 +99,26 @@ public class Linter {
 
     private void createFindings(final Collection<CustomScalarNode> scalarNodes)
     {
-        findings.addAll(scalarNodes.stream().map( d -> new Finding(d.getLine(), d.getValue(), d.getYaml())).collect(Collectors.toList()));
+        scalarNodes.stream()
+                .map(d -> new Finding(d.getLine(), d.getValue(), d.getYaml()))
+                .forEachOrdered( f -> findings.add(f));
     }
 
     private Set<CustomScalarNode> getCustomScalarNodes(MappingNode mappingNode, Path yaml)
     {
         return mappingNode.getValue().stream()
                 .map(n -> n.getKeyNode())
-                .filter( v -> v instanceof ScalarNode)
+                .filter(ScalarNode.class::isInstance)
                 .map(n -> new CustomScalarNode((ScalarNode) n, yaml))
                 .collect(Collectors.toSet());
     }
 
-    private ScalarNode getScalarNode(NodeTuple nodeTuple)
+    private Optional<ScalarNode> getScalarNode(NodeTuple nodeTuple)
     {
-        var keyNode = nodeTuple.getKeyNode();
-        if( keyNode instanceof ScalarNode)
-        {
-            return (ScalarNode) keyNode;
-        }
-        else
-        {
-            throw new IllegalStateException("KeyNode should be of type 'ScalarNode' but is type " + keyNode.getClass());
-        }
+        return Stream.of(nodeTuple.getKeyNode())
+                .filter(ScalarNode.class::isInstance)
+                .map(ScalarNode.class::cast)
+                .findAny();
     }
 
     private Node getFirstDocumentOrReturnEmpty(List<Node> nodes)
