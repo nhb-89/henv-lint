@@ -18,10 +18,9 @@ import static java.util.stream.Collectors.groupingBy;
 public class App {
 
     public static void main(String[] args) throws IOException {
-       //var rootDirectory = Paths.get("../searchspace");
-       var root = Paths.get("/Users/DE113838/repos/deco-governance-system");
+       var rootDirectory = Paths.get("../searchspace");
 
-       ProjectLinter projectLint = new ProjectLinter(root);
+       ProjectLinter projectLint = new ProjectLinter(rootDirectory);
 
        var list = projectLint.lintProject();
 
