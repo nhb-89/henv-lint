@@ -51,6 +51,7 @@ public class Linter {
         var truthNodes = readYaml(truthYaml);
         var nodes = readYaml(yamlFile);
 
+
         List<Node> at = StreamSupport.stream(truthNodes.spliterator(), false).collect(Collectors.toList());
         List<Node> bt = StreamSupport.stream(nodes.spliterator(), false).collect(Collectors.toList());
 
@@ -126,10 +127,19 @@ public class Linter {
         return nodes.isEmpty() ? getEmptyNode() : nodes.get(0);
     }
 
-    private static Iterable<Node> readYaml(Path yamlFile) throws IOException {
-        var inStream = Files.newInputStream(yamlFile);
-        return new Yaml().composeAll(new InputStreamReader(inStream));
-    }
+    //private static Iterable<Node> readYaml(Path yamlFile) throws IOException {
+//        try (var inStream = Files.newInputStream(yamlFile)) {
+//            return Optional.of(new Yaml().composeAll(new InputStreamReader(inStream)));
+//        } catch (IOException ex) {
+//            System.out.println("Could not parse the file: " + yamlFile);
+//            ex.printStackTrace();
+//        }
+//        return Optional.empty();
+        private static Iterable<Node> readYaml(Path yamlFile) throws IOException {
+            var inStream = Files.newInputStream(yamlFile);
+            return new Yaml().composeAll(new InputStreamReader(inStream));
+        }
+
 
     private static Node getEmptyNode()
     {

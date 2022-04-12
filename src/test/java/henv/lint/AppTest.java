@@ -18,7 +18,7 @@ class AppTest {
     public void appHasAGreeting() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test1");
 
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
 
@@ -35,7 +35,7 @@ class AppTest {
     @Test
     public void appHasAGreeting2() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test2");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -52,7 +52,7 @@ class AppTest {
     @Test
     public void emptyFile() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test3");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -66,7 +66,7 @@ class AppTest {
     @Test
     public void appHasAGreeting4() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test4");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -79,7 +79,7 @@ class AppTest {
     @Test
     public void appHasAGreeting5() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test5");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -89,7 +89,7 @@ class AppTest {
     @Test
     public void appHasAGreeting6() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test6");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -99,7 +99,7 @@ class AppTest {
     @Test
     public void allEmptyFiles() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/allEmpty");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();
@@ -109,7 +109,7 @@ class AppTest {
     @Test
     public void test7() throws IOException {
         var rootDirectory = Paths.get("./src/test/resources/test7");
-        var yamlFiles = YamlFileUtils.findFiles(rootDirectory);
+        var yamlFiles = YamlFileUtils.findYamlFiles(rootDirectory);
 
         Linter lint = new Linter(yamlFiles);
         var findings = lint.lint();

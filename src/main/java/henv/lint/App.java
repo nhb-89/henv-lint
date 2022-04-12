@@ -19,7 +19,7 @@ public class App {
 
     public static void main(String[] args) throws IOException {
        //var rootDirectory = Paths.get("../searchspace");
-       var root = Paths.get("/Users/DE113838/repos/deco-data-system/environments");
+       var root = Paths.get("/Users/DE113838/repos/deco-governance-system");
 
        ProjectLinter projectLint = new ProjectLinter(root);
 

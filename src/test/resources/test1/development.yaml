@@ -1,3 +1,37 @@
-Nils:
-  Hendrik: Berger
-Harry: Deluxe
+
+
+
+admin:
+  username:  {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/username" | fetchSecretValue }}
+  adminPassword: {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/adminPassword" | fetchSecretValue }}
+  tagSyncPassword: {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/tagSyncPassword" | fetchSecretValue }}
+  userSyncPassword: {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/userSyncPassword" | fetchSecretValue }}
+  keyAdminPassword: {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/keyAdminPassword" | fetchSecretValue }}
+  rangerServicesPassword : {{ $vault | printf "ref+azurekeyvault://%s/governance-system-ranger-admin-credentials#/rangerServicesPassword" | fetchSecretValue }}
+  resources:
+    requests:
+      cpu: 5m
+      memory: 900Mi
+    limits:
+      memory: 1500Mi
+postgres:
+  hostname: {{ printf "ref+azurekeyvault://%s/%s#/host" $vault $postgresSecretKey | fetchSecretValue }}
+  database: {{ printf "ref+azurekeyvault://%s/%s#/database" $vault $postgresSecretKey | fetchSecretValue }}
+  adminUsername: {{ printf "ref+azurekeyvault://%s/%s#/admin-username" $vault $postgresSecretKey | fetchSecretValue }}
+  adminPassword: {{ printf "ref+azurekeyvault://%s/%s#/admin-password" $vault $postgresSecretKey | fetchSecretValue }}
+  rangerUsername: {{ printf "ref+azurekeyvault://%s/%s#/ranger-username" $vault $postgresSecretKey | fetchSecretValue }}
+  rangerPassword: {{ printf "ref+azurekeyvault://%s/%s#/ranger-password" $vault $postgresSecretKey | fetchSecretValue }}
+  sslEnabled: true
+  sslRequired: false
+  secretKey: {{ $postgresSecretKey }}
+solr:
+  storageSize: "10Gi"
+vault:
+  name:  {{ $vault }}
+zookeeper:
+  resources:
+    requests:
+      cpu: 5m
+      memory: 450Mi
+    limits:
+      memory: 1Gi

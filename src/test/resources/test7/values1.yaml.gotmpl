@@ -1,4 +1,4 @@
 postgres:
-  host: {{ $vault | printf "ref+azurekeyvault://%s/data-system-druid-postgres-server-credentials#/postgresql-host" | fetchSecretValue }}
-  database: {{ $vault | printf "ref+azurekeyvault://%s/data-system-druid-postgres-server-credentials#/postgresql-database" | fetchSecretValue }}
-  user: {{ $vault | printf "ref+azurekeyvault://%s/data-system-druid-postgres-server-credentials#/postgresql-username" | fetchSecretValue }}
+  host: {{ $vault | printf "hallo" | fetchSecretValue }}
+  database: {{ $vault | printf "hallo" | fetchSecretValue }}
+  user: {{ $vault | printf hallo" | fetchSecretValue }}
